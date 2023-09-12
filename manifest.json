@@ -1,0 +1,12 @@
+{
+	"manifest_version": 3,
+	"name": "PackagePeeker",
+	"version": "0.1",
+	"permissions": ["storage"],
+	"action": {
+		"default_popup": "packpeekpopup.html"
+	},
+	"background": {
+		"service_worker": "packpeekbackground.js"
+	}
+}
