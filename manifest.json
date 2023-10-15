@@ -4,9 +4,10 @@
 	"version": "0.1",
 	"permissions": ["storage"],
 	"action": {
-		"default_popup": "packpeekpopup.html"
+		"default_popup": "popup.html"
 	},
 	"background": {
-		"service_worker": "packpeekbackground.js"
+		"service_worker": "background.js"
 	}
 }
+
