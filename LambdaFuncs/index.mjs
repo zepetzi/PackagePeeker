@@ -182,10 +182,10 @@ export const handler = async (event) => {
 
         var finalTrackData = JSON.stringify({"error-message":"Unknown or Unsupported Carrier"});
 
-    }    
+    }    g
 
     //return JSON or text to calling function
-    return {carrier, finalTrackData}; 
+    return {carrier, "trackingNumber": event['inquiryNumber'], finalTrackData}; 
     
     // ----------- testing output -----------
 
