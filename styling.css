@@ -1,3 +1,15 @@
-body {
-    max-width: 400px;
+@import url(); {
+  font-family: 'Poppins-Black';
+  src: url('fonts\Poppins-Black.ttf') format('truetype');
+}
+
+html, body {
+    width: 500px;
+    height: 800px;
   }
+
+:root {
+    --bs-body-font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+    font-style: normal;
+}
