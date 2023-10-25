@@ -5,7 +5,15 @@
   <meta charset="UTF-8">  
   <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
 
-
+  <style>
+    @font-face {
+    font-family: 'Poppins-Black';
+    src: url('fonts/Poppins-Black.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal; }
+  </style>
+  
+  <link rel="stylesheet" href="customBS.css">
   <link rel="stylesheet" type="text/css" href="styling.css">
   <link rel="stylesheet" href="css/bootstrap-utilities.rtl.min.css">
   <link rel="stylesheet" href="css/bootstrap.css">
@@ -24,27 +32,29 @@
   <link rel="stylesheet" href="css/bootstrap-utilities.min.css">
   <link rel="stylesheet" href="css/bootstrap-utilities.rtl.css">
 
-  
-
-
 </head>
 
 <body>
 
   <title>PackagePeeker</title>
 
-
-  <div class="container my-3 border border-dark position-center">
+  
+  <nav class="my-0 pt-3 pb-2 position-center bg-custom-blue text-white shadow border border-dark fixed-top">
+  <!-- <div class="container my-0 pt-3 pb-2 position-center bg-custom-blue text-white shadow border border-dark position-sticky top-0"> -->
+    
     <h1>
-      <div class="row justify-content-center">
+      <div class="container-fluid">
+      <!-- <div class="row justify-content-center"> -->
       Package Peeker
       </div>
     </h1>
+   
   </div>
+  </nav>
 
-  <div class="container">
+  <div class="container mt-200px">
     <!-- <label for="trackingNumberInput" class="form-label mb-0">Start tracking here:</label> -->
-    <div class="row justify-content-start"> <!-- Applying no-gutters to remove the space between columns -->
+    <div class="row justify-content-start position-relative bottom-60"> <!-- Applying no-gutters to remove the space between columns -->
         <div class="col-8"> <!-- Making the column only as wide as the content -->
             <input type="text" class="form-control border border-dark" id="trackingNumberInput" placeholder="Enter tracking number here">
         </div>
