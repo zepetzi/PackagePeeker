@@ -7,11 +7,19 @@
 
   <style>
     @font-face {
-    font-family: 'Poppins-Black';
-    src: url('fonts/Poppins-Black.ttf') format('truetype');
-    font-weight: 900;
-    font-style: normal; }
-  </style>
+        font-family: 'Poppins-Black';
+        src: url('fonts/Poppins-Black.ttf');
+        font-weight: 900;
+        font-style: normal;
+    }
+
+    @font-face {
+        font-family: 'Poppins-Regular';
+        src: url('fonts/Poppins-Regular.ttf');
+        font-weight: 600;
+        font-style: normal;
+    }
+</style>
   
   <link rel="stylesheet" href="customBS.css">
   <link rel="stylesheet" type="text/css" href="styling.css">
@@ -38,44 +46,42 @@
 
   <title>PackagePeeker</title>
 
-  
-  <nav class="my-0 pt-3 pb-2 position-center bg-custom-blue text-white shadow border border-dark fixed-top">
-  <!-- <div class="container my-0 pt-3 pb-2 position-center bg-custom-blue text-white shadow border border-dark position-sticky top-0"> -->
+
+    <nav class="pt-2 pb-3 position-center bg-custom-blue text-white shadow border border-dark position fixed-top">
+    <!-- <div class="container my-0 pt-3 pb-2 position-center bg-custom-blue text-white shadow border border-dark position-sticky top-0"> -->
     
-    <h1>
-      <div class="container-fluid">
-      <!-- <div class="row justify-content-center"> -->
-      Package Peeker
+<!-- title -->
+      <h1>
+        <div class="container-fluid">
+        <!-- <div class="row justify-content-center"> -->
+        PackagePeeker
+        </div>
+      </h1>
+
+<!-- tracking number input -->
+    <div class="container">
+      <!-- <label for="trackingNumberInput" class="form-label mb-0">Start tracking here:</label> -->
+      <div class="row justify-content-start">
+          <div class="col-8">
+              <input type="text" class="form-control border border-dark" id="trackingNumberInput" placeholder="Enter tracking number here">
+          </div>
+          <div class="col-4 px-0">
+              <button type="button" class="btn btn-primary">Track Package</button>
+          </div>  
       </div>
-    </h1>
-   
-  </div>
+    </div>
   </nav>
 
-  <div class="container mt-200px">
-    <!-- <label for="trackingNumberInput" class="form-label mb-0">Start tracking here:</label> -->
-    <div class="row justify-content-start position-relative bottom-60"> <!-- Applying no-gutters to remove the space between columns -->
-        <div class="col-8"> <!-- Making the column only as wide as the content -->
-            <input type="text" class="form-control border border-dark" id="trackingNumberInput" placeholder="Enter tracking number here">
-        </div>
-        <div class="col-4 px-0"> <!-- Making the column only as wide as the content -->
-            <button type="button" class="btn btn-primary">Track Package</button>
-        </div>  
-    </div>
-  </div>
-
-  
     
 
-    <div class="container-fluid my-3 pb-0 pb-1 border border-dark">
+    <div class="container-fluid border " style="margin-top: 120px;">
     Tracking Info For:
       <div class="progress border border-dark" id="trackingInfo">
         <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
         <!-- <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div> -->
       </div>
     </div>
-  </div>
-
+  
   <script src="popup.js"></script>
   <!-- <script src="js/bootstrap.bundle.js"></script> -->
   <!-- <script src="js/bootstrap.bundle.min.js"></script> -->

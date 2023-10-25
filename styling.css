@@ -1,4 +1,5 @@
 html, body {
+    font-family: "Poppins-Regular", sans-serif !important;
     width: 500px;
     height: 800px;
   }
@@ -7,6 +8,11 @@ h1 {
   font-family: 'Poppins-Black', sans-serif !important;
 }
 
+.btn {
+  font-family: "Poppins-Regular", sans-serif !important;
+}
+
 .bg-custom-blue {
   background-color: #2176FF !important;
 }
+
