@@ -24,7 +24,6 @@ trackButton.addEventListener('click', async function sendToLambda() {
         } else {
 
             //create text line mentioning error
-
             console.error('Error:', gatewayResp.status, gatewayResp.statusText);
         }
 
