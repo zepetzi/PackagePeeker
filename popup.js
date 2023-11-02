@@ -19,6 +19,8 @@ trackButton.addEventListener('click', async function sendToLambda() {
             
             if (responseBody) {
 
+                
+
             }
 
         } else {
