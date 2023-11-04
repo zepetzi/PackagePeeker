@@ -7,7 +7,7 @@ trackButton.addEventListener('click', async function sendToLambda() {
     const trackingInput = trackingField.value;
         
         //create payload for API gateway and send to endpoint
-        let gatewayResp = await fetch('https://dpknn5hqd4.execute-api.us-east-1.amazonaws.com/dev', {
+        let gatewayResp = await fetch('<api gateway endpoint here>', {
             method: 'POST',
             body: JSON.stringify({"inquiryNumber":trackingInput}),
             headers: {
@@ -30,6 +30,9 @@ trackButton.addEventListener('click', async function sendToLambda() {
                 var storageObj = {};
                 storageObj[trackString] = responseBody;
                 
+                //check for duplicates
+                // if () {};
+
                 //store it in local storage
                 chrome.local.storage.set(storageObj, function() {
 
@@ -52,17 +55,13 @@ trackButton.addEventListener('click', async function sendToLambda() {
         }
 
 
-        
 
+// now (re)render visual elements?
 // if carrier, send to local storage 
 
+// then for every item in local storage
 
-
-
-// then for every item in local storage,
-
-
-// depending on carrier, parse and sort tracking elements and populate progress bar
+// depending on carrier, use the correct render function parse and sort tracking elements and populate progress bar
 
 
 
