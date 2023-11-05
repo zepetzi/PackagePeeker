@@ -30,22 +30,32 @@ trackButton.addEventListener('click', async function sendToLambda() {
                 var storageObj = {};
                 storageObj[trackString] = responseBody;
                 
-                //check for duplicates
-                // if () {};
+                //check for duplicates:
+                //attempt to get the string from the local storage
+                //then if it exists and is returned, set statusMessage string to
+                //indicate that user is already tracking that number
+                chrome.storage.local.get(trackString, function(returnedItem) {
+                    
+                    if (returnedItem.hasOwnProperty(trackString)) {
+                    
+                        var statusMessage = "Tracking Number Already Exists in List";
+                    
+                    } else {
+                        
+                        //otherwise, add to storage
+                        chrome.storage.local.set(storageObj, function() {
 
-                //store it in local storage
-                chrome.local.storage.set(storageObj, function() {
-
-                    //if there's a storage error:
-                    if (chrome.runtime.lastError) {
-                        console.error('Local Storage Error', chrome.runtime.lastError.message);
-                    }
-                
+                            //if there's a storage error:
+                            if (chrome.runtime.lastError) {
+                                console.error('Local Storage Error', chrome.runtime.lastError.message);
+                            } else {
+                                var statusMessage = "Tracking Number Added!";
+                            };
+                        });
+                    };
                 });
 
-                
-
-            }
+            };
 
         //otherwise if there's no response body:
         } else {
