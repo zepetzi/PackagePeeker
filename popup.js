@@ -1,40 +1,61 @@
 document.addEventListener('DOMContentLoaded', (event) => {
+    setupTrackButtonListener();
+});
+
+
+async function setupTrackButtonListener() {
 
     const trackButton = document.getElementById('trackButton');
+    trackButton.addEventListener('click', trackingHandler);
+}
+
+
+async function trackingHandler() {
+
     const trackingField = document.getElementById('trackingNumberField');
+    //get value inputted from input field
+    const trackingInput = trackingField.value;
 
-    trackButton.addEventListener('click', async function sendToLambda() {
-
-        /*
-        ------- storage testing -------
-        let rando = Math.random();
-        let randString = rando.toString();
+    try {
+        const responseBody = await sendToLambda(trackingInput);
         
-        localStorage.setItem([randString], 'value1');
-        console.log("added to storage")
-        });
-        -------------------------------
-        */
+        if (responseBody){
+            await saveToChromeStorage(responseBody);
+        } else {
 
-        //get value inputted from input field
-        const trackingInput = trackingField.value;
-            
-            try {
-                //create payload for API gateway and send to endpoint
-                let gatewayResp = await fetch('<>', {
-                    method: 'POST',
-                    body: JSON.stringify({"inquiryNumber":trackingInput}),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+        }
 
-                });
 
-                //if response is successful s
-                if (gatewayResp.ok) {
-                    let responseBody = await gatewayResp.json();
-                    
-                    console.log("gateway resp okay");
+    } catch (error) {
+
+    console.error("Error")
+
+    }
+
+};
+
+
+async function sendToLambda() {   
+    //create payload for API gateway and send to endpoint
+    const gatewayResp = await fetch('<>', {
+        method: 'POST',
+        body: JSON.stringify({"inquiryNumber":trackingInput}),
+        headers: {
+            'Content-Type': 'application/json'
+        }   
+    });
+
+    if (!gatewayResp.ok) {
+        throw new Error(`Server responded with error: ${gatewayResp.status} ${gatewayResp.statusText}`);
+        var statusMessage = gatewayResp.statusText;
+    };
+
+    return await gatewayResp.json();
+    console.log("gateway resp okay");
+
+}
+
+                //if response is successful 
                     //create object for the response
                     if (responseBody) {
                         /*
@@ -80,22 +101,17 @@ document.addEventListener('DOMContentLoaded', (event) => {
                     };
 
                 //otherwise if there's no response body:
-                } else {
+                // } else {
 
                     //so create variable that can be used to either display a message or information at the end?
                     //create text line mentioning error
-                    console.error('Error:', gatewayResp.status, gatewayResp.statusText);
-                    //updateStatus("Error: No Response Body");
 
-                    }
 
-            } catch (error) {
+                    // }
 
-                console.error("Error")
-
-                }
+asdfasdfasdfasdf
             
-            //try statement
+            //try statementss
 
     // now (re)render visual elements?
     // if carrier, send to local storage 
@@ -105,10 +121,17 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // depending on carrier, use the correct render function parse and sort tracking elements and populate progress bar
 
 
+ 
 
 
-    });
 
-    // //upon 
+/*
+------- storage testing -------
+let rando = Math.random();
+let randString = rando.toString();
 
-}); //DOMContentLoaded event listener closing brackets
+localStorage.setItem([randString], 'value1');
+console.log("added to storage")
+});
+-------------------------------
+*/
