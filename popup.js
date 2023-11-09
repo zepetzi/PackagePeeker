@@ -87,7 +87,7 @@ async function sendToLambda(trackingInput, carrierID) {
         "carrier":carrierID
     }
 
-    const gatewayResp = await fetch('api endpoint here', {
+    const gatewayResp = await fetch('<api endpoint here>', {
         method: 'POST',
         body: JSON.stringify(payload),
         headers: {

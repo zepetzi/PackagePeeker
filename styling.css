@@ -13,8 +13,13 @@ h1 {
 }
 
 .bg-custom-blue {
-
-  
-  background-color: #2176FF !important;
+  background-color: rgb(34, 105, 181) !important;
 }
 
+.bg-custom-button-color {
+  background-color: #009dff !important;
+  color: #9a9a9a;
+}
+
+
+/* #2176FF */
