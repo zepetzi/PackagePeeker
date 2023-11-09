@@ -1,107 +1,154 @@
+let statusMessage;
+
 document.addEventListener('DOMContentLoaded', (event) => {
     setupTrackButtonListener();
 });
 
-
 async function setupTrackButtonListener() {
 
+    //assign button element and add click listener for tracking button
     const trackButton = document.getElementById('trackButton');
+    //upon click, start tracking handler func
     trackButton.addEventListener('click', trackingHandler);
+
 }
+
+
+async function trackingInputValidation(trackingInput) {
+
+        //regex for testing the trackingNumber argument
+        var ups = /^1Z[0-9A-Z]{16}$/;
+        var fedex1 = /^\d{12}$/;
+        var fedex2 = /^\d{15}$/;
+        var usps1 = /^94\d{20}$/;
+        var usps2 = /^92\d{20}$/;
+        var usps3 = /^\d{30}$/;
+        var usps4 = /^\d{26}$/;
+    
+        // conditional logic using the test() method
+        if (ups.test(trackingInput)) {
+            return 'UPS';
+        } else if (fedex1.test(trackingInput) || fedex2.test(trackingInput)) {
+            return 'FedEx';
+        } else if (usps1.test(trackingInput) || usps2.test(trackingInput) || usps3.test(trackingInput) || usps4.test(trackingInput)) {
+            return 'USPS';
+        } else {
+            console.error("Unrecognized Carrier Format");
+            statusMessage = "Unrecognized Carrier Format";
+            throw new Error("Unrecognized Carrier Format");
+        }
+
+};
 
 
 async function trackingHandler() {
 
+    //get info from the tracking info field
+    statusMessage = "Loading..."
     const trackingField = document.getElementById('trackingNumberField');
     //get value inputted from input field
     const trackingInput = trackingField.value;
 
+    //send to Lambda function, await response body json
     try {
-        const responseBody = await sendToLambda(trackingInput);
+
+        //validate input 
+        const carrierID = await trackingInputValidation(trackingInput);
+        // responseBody is a json by now
+        const responseBody = await sendToLambda(trackingInput, carrierID);
         
         if (responseBody){
-            await saveToChromeStorage(responseBody);
+
+            //if response body exists, attempt to save to chrome storage
+            statusMessage = "Response body exists!";
+            console.log("resp body exists");
+            saveToChromeStorage(responseBody);
+
         } else {
+            //otherwise error out
+            statusMessage = "No response body received";
+            console.error("No response body received");
 
         }
 
-
     } catch (error) {
 
-    console.error("Error")
+        console.error("Error", error.message);
+
+    }
+};
+
+//from trackingHandler:
+async function sendToLambda(trackingInput, carrierID) {   
+    //create payload for API gateway and send to endpoint
+
+    const payload = {
+        "inquiryNumber":trackingInput,
+        "carrier":carrierID
+    }
+
+    const gatewayResp = await fetch('api endpoint here', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        headers: {
+            'Content-Type': 'application/json'
+        }   
+    });
+
+    //if there's not an OK gateway response
+    if (!gatewayResp.ok) {
+
+        //get the status message and throw error with that message
+        statusMessage = gatewayResp.statusText;
+        throw new Error(`Server responded with error: ${gatewayResp.status} ${gatewayResp.statusText}`);
+    };
+
+    //otherwise log to console that it was okay, and return the gateway response json
+    console.log("gateway resp okay");
+    statusMessage = "Gateway resp okay!"
+    return await gatewayResp.json();
+    
+    
+
+};
+
+
+async function saveToChromeStorage(responseBody){
+
+    //get the tracking number as a string from the response body
+    let trackString = responseBody["trackingNumber"];
+    
+    //
+    if (!trackString) {
+        statusMessage = "Tracking number not found in response";
+        throw new Error("Tracking number not found in response");
+    };
+
+    //check if duplicate exists aka tracking number is already being tracked
+    let dupeData = await chrome.storage.local.get(trackString);
+    if (dupeData.hasOwnProperty(trackString)) {
+        statusMessage = "Tracking number already exists!";
+        console.log("Tracking number already exists!");
+        return;
+    }
+
+    try {
+
+        await chrome.storage.local.set({[trackString]: responseBody});
+        console.log("tracking info added to local storage");
+        statusMessage = "Tracking info added to local storage";
+
+    } catch(error) {
+
+        statusMessage = "Error adding to chrome storage";
+        console.error('Error adding to chrome storage:', error);
+        throw error;
 
     }
 
 };
 
 
-async function sendToLambda() {   
-    //create payload for API gateway and send to endpoint
-    const gatewayResp = await fetch('<>', {
-        method: 'POST',
-        body: JSON.stringify({"inquiryNumber":trackingInput}),
-        headers: {
-            'Content-Type': 'application/json'
-        }   
-    });
-
-    if (!gatewayResp.ok) {
-        throw new Error(`Server responded with error: ${gatewayResp.status} ${gatewayResp.statusText}`);
-        var statusMessage = gatewayResp.statusText;
-    };
-
-    return await gatewayResp.json();
-    console.log("gateway resp okay");
-
-}
-
-                //if response is successful 
-                    //create object for the response
-                    if (responseBody) {
-                        /*
-                        If it exists, create another object with the trackingnumber 
-                        as the key and the object itself as the value
-                        */
-
-                        console.log("resp body exists");
-                        var trackString = responseBody["trackingNumber"];
-                        var storageObj = {};
-                        storageObj[trackString] = responseBody;
-                        
-                        //check for duplicates:
-                        //attempt to get the string from the local storage
-                        //then if it exists and is returned, set statusMessage string to
-                        //indicate that user is already tracking that number
-                        chrome.storage.local.get(trackString, function(returnedItem) {
-                            
-                            if (returnedItem.hasOwnProperty(trackString)) {
-                                
-                                console.log("already exists");
-                                var statusMessage = "Tracking Number Already Exists in List";
-                            
-                            } else {
-                                
-                                //otherwise, add to storage
-                                chrome.storage.local.set(storageObj, function() {
-
-                                    console.log("added to local storage");
-                                    //if there's a storage error:
-                                    if (chrome.runtime.lastError) {
-                                        console.error('Local Storage Error', chrome.runtime.lastError.message);
-
-                                        //updateStatus("Error adding number to local storage");
-
-                                    } else {
-                                        var statusMessage = "Tracking Number Added!";
-                                    };
-                                });
-                            };
-                        });
-
-                    };
-
-                //otherwise if there's no response body:
-                // } else {
 
                     //so create variable that can be used to either display a message or information at the end?
                     //create text line mentioning error
@@ -109,8 +156,7 @@ async function sendToLambda() {
 
                     // }
 
-asdfasdfasdfasdf
-            
+
             //try statementss
 
     // now (re)render visual elements?
