@@ -45,6 +45,7 @@ async function trackingHandler() {
 
     //get info from the tracking info field
     statusMessage = "Loading..."
+    updateMessage(statusMessage);
     const trackingField = document.getElementById('trackingNumberField');
     //get value inputted from input field
     const trackingInput = trackingField.value;
@@ -61,12 +62,14 @@ async function trackingHandler() {
 
             //if response body exists, attempt to save to chrome storage
             statusMessage = "Response body exists!";
+            updateMessage(statusMessage);
             console.log("resp body exists");
             saveToChromeStorage(responseBody);
 
         } else {
             //otherwise error out
             statusMessage = "No response body received";
+            updateMessage(statusMessage);
             console.error("No response body received");
 
         }
@@ -87,7 +90,7 @@ async function sendToLambda(trackingInput, carrierID) {
         "carrier":carrierID
     }
 
-    const gatewayResp = await fetch('<api endpoint here>', {
+    const gatewayResp = await fetch('<>', {
         method: 'POST',
         body: JSON.stringify(payload),
         headers: {
@@ -100,16 +103,16 @@ async function sendToLambda(trackingInput, carrierID) {
 
         //get the status message and throw error with that message
         statusMessage = gatewayResp.statusText;
+        updateMessage(statusMessage);
         throw new Error(`Server responded with error: ${gatewayResp.status} ${gatewayResp.statusText}`);
     };
 
     //otherwise log to console that it was okay, and return the gateway response json
     console.log("gateway resp okay");
     statusMessage = "Gateway resp okay!"
+    updateMessage(statusMessage);
     return await gatewayResp.json();
     
-    
-
 };
 
 
@@ -121,6 +124,7 @@ async function saveToChromeStorage(responseBody){
     //
     if (!trackString) {
         statusMessage = "Tracking number not found in response";
+        updateMessage(statusMessage);
         throw new Error("Tracking number not found in response");
     };
 
@@ -129,6 +133,7 @@ async function saveToChromeStorage(responseBody){
     if (dupeData.hasOwnProperty(trackString)) {
         statusMessage = "Tracking number already exists!";
         console.log("Tracking number already exists!");
+        updateMessage(statusMessage);
         return;
     }
 
@@ -137,16 +142,23 @@ async function saveToChromeStorage(responseBody){
         await chrome.storage.local.set({[trackString]: responseBody});
         console.log("tracking info added to local storage");
         statusMessage = "Tracking info added to local storage";
+        updateMessage(statusMessage);
 
     } catch(error) {
 
         statusMessage = "Error adding to chrome storage";
+        updateMessage(statusMessage);
         console.error('Error adding to chrome storage:', error);
         throw error;
 
     }
 
 };
+
+async function updateMessage(statusMessage) {
+    let currStatusText = document.getElementById("currentStatus");
+    currStatusText.textContent = statusMessage;
+}
 
 
 

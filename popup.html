@@ -47,7 +47,7 @@
   <title>PackagePeeker</title>
 
 
-    <nav class="pt-3 pb-4 position-center bg-custom-blue text-white shadow-lg position fixed-top">
+    <nav class="pt-3 pb-2 position-center bg-custom-blue text-white shadow position fixed-top">
     <!-- <div class="container my-0 pt-3 pb-2 position-center bg-custom-blue text-white shadow border border-dark position-sticky top-0"> -->
     
 <!-- title -->
@@ -63,21 +63,28 @@
       <!-- <label for="trackingNumberInput" class="form-label mb-0">Start tracking here:</label> -->
       <div class="row justify-content-start">
           <div class="col-8">
-              <input type="text" class="form-control border " id="trackingNumberField" placeholder="Enter tracking number here">
+              <input type="text" class="form-control border shadow" id="trackingNumberField" placeholder="Enter tracking number here">
           </div>
           <div class="col-4 px-0">
-              <button type="button" id="trackButton" class="btn btn-primary border-dark shadow bg-custom-button-color">Track Package</button>
-          </div>  
+              <button type="button" id="trackButton" class="btn btn-primary shadow bg-custom-button-color">Track Package</button>
+          </div>
+
+          <div class="currentStatus" id="currentStatus">
+                <i>s</i>
+          </div>
       </div>
     </div>
   </nav>
+
+
+
 
     
     <!-- <div class="container-fluid border " style="margin-top: 130px;"> -->
     <div class="container-fluid" style="margin-top: 140px;">
     Tracking Info For:
       <div class="progress border" id="trackingInfo">
-        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+        <div class="progress-bar progress-bar-striped shadow progress-bar-animated" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
         <!-- <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div> -->
       </div>
     </div>
