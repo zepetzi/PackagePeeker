@@ -21,5 +21,17 @@ h1 {
   color: #9a9a9a;
 }
 
+.message-success {
+  color: green;
+}
+.message-error {
+  color: rgb(203, 24, 24);
+}
+.message-warning {
+  color: rgb(255, 216, 75);
+}
+.message-normal {
+  color: rgb(255, 255, 255);
+}
 
 /* #2176FF */

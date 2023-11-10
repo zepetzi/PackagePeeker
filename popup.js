@@ -34,7 +34,8 @@ async function trackingInputValidation(trackingInput) {
             return 'USPS';
         } else {
             console.error("Unrecognized Carrier Format");
-            statusMessage = "Unrecognized Carrier Format";
+            // statusMessage = "Unrecognized Carrier Format";
+            // updateMessage(statusMessage);
             throw new Error("Unrecognized Carrier Format");
         }
 
@@ -45,7 +46,7 @@ async function trackingHandler() {
 
     //get info from the tracking info field
     statusMessage = "Loading..."
-    updateMessage(statusMessage);
+    updateMessage(statusMessage, "normal");
     const trackingField = document.getElementById('trackingNumberField');
     //get value inputted from input field
     const trackingInput = trackingField.value;
@@ -62,14 +63,14 @@ async function trackingHandler() {
 
             //if response body exists, attempt to save to chrome storage
             statusMessage = "Response body exists!";
-            updateMessage(statusMessage);
+            updateMessage(statusMessage, "success");
             console.log("resp body exists");
             saveToChromeStorage(responseBody);
 
         } else {
             //otherwise error out
             statusMessage = "No response body received";
-            updateMessage(statusMessage);
+            updateMessage(statusMessage, "error");
             console.error("No response body received");
 
         }
@@ -77,7 +78,8 @@ async function trackingHandler() {
     } catch (error) {
 
         console.error("Error", error.message);
-
+        statusMessage = error.message;
+        updateMessage(statusMessage, "error");
     }
 };
 
@@ -90,7 +92,7 @@ async function sendToLambda(trackingInput, carrierID) {
         "carrier":carrierID
     }
 
-    const gatewayResp = await fetch('<>', {
+    const gatewayResp = await fetch('<api here>', {
         method: 'POST',
         body: JSON.stringify(payload),
         headers: {
@@ -103,14 +105,14 @@ async function sendToLambda(trackingInput, carrierID) {
 
         //get the status message and throw error with that message
         statusMessage = gatewayResp.statusText;
-        updateMessage(statusMessage);
+        updateMessage(statusMessage, "error");
         throw new Error(`Server responded with error: ${gatewayResp.status} ${gatewayResp.statusText}`);
     };
 
     //otherwise log to console that it was okay, and return the gateway response json
     console.log("gateway resp okay");
     statusMessage = "Gateway resp okay!"
-    updateMessage(statusMessage);
+    updateMessage(statusMessage, "success");
     return await gatewayResp.json();
     
 };
@@ -124,7 +126,7 @@ async function saveToChromeStorage(responseBody){
     //
     if (!trackString) {
         statusMessage = "Tracking number not found in response";
-        updateMessage(statusMessage);
+        updateMessage(statusMessag, "error");
         throw new Error("Tracking number not found in response");
     };
 
@@ -133,7 +135,7 @@ async function saveToChromeStorage(responseBody){
     if (dupeData.hasOwnProperty(trackString)) {
         statusMessage = "Tracking number already exists!";
         console.log("Tracking number already exists!");
-        updateMessage(statusMessage);
+        updateMessage(statusMessage, "warning");
         return;
     }
 
@@ -142,12 +144,12 @@ async function saveToChromeStorage(responseBody){
         await chrome.storage.local.set({[trackString]: responseBody});
         console.log("tracking info added to local storage");
         statusMessage = "Tracking info added to local storage";
-        updateMessage(statusMessage);
+        updateMessage(statusMessage, "success");
 
     } catch(error) {
 
         statusMessage = "Error adding to chrome storage";
-        updateMessage(statusMessage);
+        updateMessage(statusMessage, "error");
         console.error('Error adding to chrome storage:', error);
         throw error;
 
@@ -155,8 +157,27 @@ async function saveToChromeStorage(responseBody){
 
 };
 
-async function updateMessage(statusMessage) {
+async function updateMessage(statusMessage, type) {
     let currStatusText = document.getElementById("currentStatus");
+
+    currStatusText.className = 'fst-italic';
+
+    switch (type) {
+        
+        case 'success':
+            currStatusText.classList.add('message-success');
+            break;
+        case 'error':
+            currStatusText.classList.add('message-error');
+            break;
+        case 'warning':
+            currStatusText.classList.add('message-warning');
+            break;
+        case 'normal':
+            currStatusText.classList.add('message-normal');
+            break;
+    }
+
     currStatusText.textContent = statusMessage;
 }
 
