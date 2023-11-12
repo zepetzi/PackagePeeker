@@ -21,6 +21,10 @@ h1 {
   color: #9a9a9a;
 }
 
+.trackDisplay {
+  font-family: 'Poppins-SemiBold', sans-serif !important;
+}
+
 .message-success {
   color: rgb(65, 255, 65);
 }
@@ -33,5 +37,7 @@ h1 {
 .message-normal {
   color: rgb(255, 255, 255);
 }
+
+
 
 /* #2176FF */
