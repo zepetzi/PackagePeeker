@@ -40,10 +40,20 @@ async function trackingInputValidation(trackingInput) {
         }
 
 };
-
+async function checkDupe(trackingInput) {
+    //check if duplicate exists aka tracking number is already being tracked
+    let dupeData = await chrome.storage.local.get(trackingInput);
+    if (dupeData.hasOwnProperty(trackingInput)) {
+        statusMessage = "Tracking number already exists!";
+        console.log("Tracking number already exists!");
+        updateMessage(statusMessage, "warning");
+        throw new Error("Tracking number already exists!");
+    }
+};
 
 async function trackingHandler() {
 
+    
     //get info from the tracking info field
     statusMessage = "Loading..."
     updateMessage(statusMessage, "normal");
@@ -51,9 +61,12 @@ async function trackingHandler() {
     //get value inputted from input field
     const trackingInput = trackingField.value;
 
+    
+
     //send to Lambda function, await response body json
     try {
 
+        await checkDupe(trackingInput);
         //validate input 
         const carrierID = await trackingInputValidation(trackingInput);
         // responseBody is a json by now
@@ -92,7 +105,7 @@ async function sendToLambda(trackingInput, carrierID) {
         "carrier":carrierID
     }
 
-    const gatewayResp = await fetch('<api here>', {
+    const gatewayResp = await fetch('', {
         method: 'POST',
         body: JSON.stringify(payload),
         headers: {
@@ -129,15 +142,6 @@ async function saveToChromeStorage(responseBody){
         updateMessage(statusMessag, "error");
         throw new Error("Tracking number not found in response");
     };
-
-    //check if duplicate exists aka tracking number is already being tracked
-    let dupeData = await chrome.storage.local.get(trackString);
-    if (dupeData.hasOwnProperty(trackString)) {
-        statusMessage = "Tracking number already exists!";
-        console.log("Tracking number already exists!");
-        updateMessage(statusMessage, "warning");
-        return;
-    }
 
     try {
 
@@ -180,6 +184,11 @@ async function updateMessage(statusMessage, type) {
 
     currStatusText.textContent = statusMessage;
 }
+
+
+
+
+
 
 
 

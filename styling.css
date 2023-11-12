@@ -22,13 +22,13 @@ h1 {
 }
 
 .message-success {
-  color: green;
+  color: rgb(65, 255, 65);
 }
 .message-error {
-  color: rgb(203, 24, 24);
+  color: rgb(253, 32, 32);
 }
 .message-warning {
-  color: rgb(255, 216, 75);
+  color: rgb(255, 220, 92);
 }
 .message-normal {
   color: rgb(255, 255, 255);
