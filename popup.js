@@ -105,7 +105,7 @@ async function sendToLambda(trackingInput, carrierID) {
         "carrier":carrierID
     }
 
-    const gatewayResp = await fetch('api endpoint here', {
+    const gatewayResp = await fetch('https://dpknn5hqd4.execute-api.us-east-1.amazonaws.com/dev', {
         method: 'POST',
         body: JSON.stringify(payload),
         headers: {
@@ -189,6 +189,11 @@ async function updateMessage(statusMessage, type) {
 Get most relevant info from trackingJSON in chrome storage 
 and package into a new JSON and send to progress bar/visual elements
 */
+async function trackingInfoExt(trackingNumber) {
+
+  if (trackingNumber[]  
+
+}
 
 
 
