@@ -1,3 +1,5 @@
+import { apiEndpointURL } from './apivar.js';
+
 let statusMessage;
 
 document.addEventListener('DOMContentLoaded', (event) => {
@@ -105,7 +107,7 @@ async function sendToLambda(trackingInput, carrierID) {
         "carrier":carrierID
     }
 
-    const gatewayResp = await fetch('https://dpknn5hqd4.execute-api.us-east-1.amazonaws.com/dev', {
+    const gatewayResp = await fetch(apiEndpointURL, {
         method: 'POST',
         body: JSON.stringify(payload),
         headers: {
@@ -189,11 +191,18 @@ async function updateMessage(statusMessage, type) {
 Get most relevant info from trackingJSON in chrome storage 
 and package into a new JSON and send to progress bar/visual elements
 */
-async function trackingInfoExt(trackingNumber) {
+async function trackingInfoExtract(trackingNumber) {
 
-  if (trackingNumber[]  
+  if (trackingNumber){
+    console.log("beep")
+  }
 
-}
+};
+
+
+async function renderHTML() {
+
+;}
 
 
 
