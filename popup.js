@@ -151,6 +151,7 @@ async function saveToChromeStorage(responseBody){
         console.log("tracking info added to local storage");
         statusMessage = "Tracking info added to local storage";
         updateMessage(statusMessage, "success");
+        await trackingInfoExtract(responseBody);
 
     } catch(error) {
 
@@ -191,11 +192,16 @@ async function updateMessage(statusMessage, type) {
 Get most relevant info from trackingJSON in chrome storage 
 and package into a new JSON and send to progress bar/visual elements
 */
-async function trackingInfoExtract(trackingNumber) {
+async function trackingInfoExtract(trackingJSON) {
 
-  if (trackingNumber){
-    console.log("beep")
-  }
+  let repackJSON = {};  
+
+  if (trackingJSON["carrier"] == "FedEx") {
+    repackJSON.carrier = "FedEx";
+    repackJSON.trackingNumber = trackingJSON["trackingNumber"],
+    repackJSON.trackingETA = repackJSON.finalTrackData.output.completeTrackResults[0][0].standardTransitTimeWindow.window.ends
+    repackJSON.currentStatus = repackJSON.finalTrackData.output.completeTrackResults[0][0].scanEvents[0].eventDescription
+  };
 
 };
 
