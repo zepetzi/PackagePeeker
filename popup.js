@@ -80,6 +80,7 @@ async function trackingHandler() {
             statusMessage = "Response body exists!";
             updateMessage(statusMessage, "success");
             console.log("resp body exists");
+            await checkInfoFound(responseBody);
             saveToChromeStorage(responseBody);
 
         } else {
@@ -132,6 +133,23 @@ async function sendToLambda(trackingInput, carrierID) {
     
 };
 
+async function checkInfoFound(responseBody) {
+
+    if (responseBody["carrier"] == "FedEx"){
+        if (responseBody?.finalTrackData?.output?.completeTrackResults?.[0]?.trackResults?.[0]?.error !== undefined) {
+            statusMessage = responseBody?.finalTrackData?.output?.completeTrackResults?.[0]?.trackResults?.[0]?.error?.message;
+            updateMessage(statusMessage, "error");
+            throw new Error(`{statusMessage}`)
+        }
+    } else if (responseBody["carrier"] == "UPS") {
+        if (responseBody?.finalTrackData?.trackResponse?.shipment?.[0]?.warnings !== undefined) {
+            statusMessage = responseBody?.finalTrackData?.trackResponse?.shipment?.[0]?.warnings?.[0]?.message;
+            updateMessage(statusMessage, "error");
+            throw new Error(`{statusMessage}`)
+        }
+    }
+
+};
 
 async function saveToChromeStorage(responseBody){
 
@@ -141,7 +159,7 @@ async function saveToChromeStorage(responseBody){
     //
     if (!trackString) {
         statusMessage = "Tracking number not found in response";
-        updateMessage(statusMessag, "error");
+        updateMessage(statusMessage, "error");
         throw new Error("Tracking number not found in response");
     };
 
@@ -192,21 +210,33 @@ async function updateMessage(statusMessage, type) {
 Get most relevant info from trackingJSON in chrome storage 
 and package into a new JSON and send to progress bar/visual elements
 */
-async function trackingInfoExtract(trackingJSON) {
+async function trackingInfoExtract(responseBody) {
 
   let repackJSON = {};  
 
-  if (trackingJSON["carrier"] == "FedEx") {
+  if (responseBody["carrier"] == "FedEx") {
     repackJSON.carrier = "FedEx";
-    repackJSON.trackingNumber = trackingJSON["trackingNumber"],
-    repackJSON.trackingETA = repackJSON.finalTrackData.output.completeTrackResults[0][0].standardTransitTimeWindow.window.ends
-    repackJSON.currentStatus = repackJSON.finalTrackData.output.completeTrackResults[0][0].scanEvents[0].eventDescription
-  };
+    repackJSON.trackingNumber = responseBody["trackingNumber"],
+    repackJSON.trackingETA = responseBody.finalTrackData.output.completeTrackResults[0].trackResults[0].standardTransitTimeWindow.window.ends,
+    repackJSON.currentStatus = responseBody.finalTrackData.output.completeTrackResults[0].trackResults[0].scanEvents[0].eventDescription
+  
+  } else if (responseBody["carrier"] == "UPS") {
 
+    repackJSON.carrier = "UPS";
+    repackJSON.trackingNumber = responseBody["trackingNumber"],
+    repackJSON.trackingETA = responseBody?.finalTrackData?.trackResponse?.shipment?.[0]?.package?.[0]?.deliveryDate?.[0]?.date,
+    repackJSON.currentStatus = responseBody?.finalTrackData?.trackResponse?.shipment?.[0]?.package?.[0]?.activity?.[0]?.status?.description
+
+//   } else if (trackingJSON["carrier"] == "USPS") {
+  
+
+  };
+  
+  await renderHTML(repackJSON);
 };
 
 
-async function renderHTML() {
+async function renderHTML(repackJSON) {
 
 ;}
 
