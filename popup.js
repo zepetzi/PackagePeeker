@@ -156,20 +156,22 @@ async function saveToChromeStorage(responseBody){
     //get the tracking number as a string from the response body
     let trackString = responseBody["trackingNumber"];
     
-    //
+    //checking if the tracking number is undefined
     if (!trackString) {
         statusMessage = "Tracking number not found in response";
         updateMessage(statusMessage, "error");
         throw new Error("Tracking number not found in response");
     };
 
+    //check if the tracking info was found at all
+    //if so, add to chrome storage
     try {
-
+        await trackingInfoExtract(responseBody);
         await chrome.storage.local.set({[trackString]: responseBody});
         console.log("tracking info added to local storage");
         statusMessage = "Tracking info added to local storage";
         updateMessage(statusMessage, "success");
-        await trackingInfoExtract(responseBody);
+        
 
     } catch(error) {
 
@@ -212,31 +214,66 @@ and package into a new JSON and send to progress bar/visual elements
 */
 async function trackingInfoExtract(responseBody) {
 
-  let repackJSON = {};  
+  let repackedJSON = {};  
 
   if (responseBody["carrier"] == "FedEx") {
-    repackJSON.carrier = "FedEx";
-    repackJSON.trackingNumber = responseBody["trackingNumber"],
-    repackJSON.trackingETA = responseBody.finalTrackData.output.completeTrackResults[0].trackResults[0].standardTransitTimeWindow.window.ends,
-    repackJSON.currentStatus = responseBody.finalTrackData.output.completeTrackResults[0].trackResults[0].scanEvents[0].eventDescription
+    repackedJSON.carrier = "FedEx";
+    repackedJSON.trackingNumber = responseBody["trackingNumber"],
+    repackedJSON.trackingETA = responseBody?.finalTrackData?.output?.completeTrackResults?.[0]?.trackResults?.[0]?.standardTransitTimeWindow?.window?.ends,
+    repackedJSON.currentStatus = responseBody?.finalTrackData?.output?.completeTrackResults?.[0]?.trackResults?.[0]?.scanEvents?.[0]?.eventDescription
+    repackedJSON.numEvents = responseBody?.finalTrackData?.output?.completeTrackResults?.[0]?.trackResults?.[0]?.scanEvents?.length
   
   } else if (responseBody["carrier"] == "UPS") {
 
-    repackJSON.carrier = "UPS";
-    repackJSON.trackingNumber = responseBody["trackingNumber"],
-    repackJSON.trackingETA = responseBody?.finalTrackData?.trackResponse?.shipment?.[0]?.package?.[0]?.deliveryDate?.[0]?.date,
-    repackJSON.currentStatus = responseBody?.finalTrackData?.trackResponse?.shipment?.[0]?.package?.[0]?.activity?.[0]?.status?.description
+    repackedJSON.carrier = "UPS";
+    repackedJSON.trackingNumber = responseBody["trackingNumber"],
+    repackedJSON.trackingETA = responseBody?.finalTrackData?.trackResponse?.shipment?.[0]?.package?.[0]?.deliveryDate?.[0]?.date,
+    repackedJSON.currentStatus = responseBody?.finalTrackData?.trackResponse?.shipment?.[0]?.package?.[0]?.activity?.[0]?.status?.description
+    repackedJSON.numEvents = responseBody?.finalTrackData?.trackResponse?.shipment?.[0]?.package?.[0]?.activity?.length
 
 //   } else if (trackingJSON["carrier"] == "USPS") {
   
 
   };
   
-  await renderHTML(repackJSON);
+  await renderHTML(repackedJSON);
 };
 
 
-async function renderHTML(repackJSON) {
+async function renderHTML(repackedJSON) {
+    //render the tracking info row to the popup.html
+
+    let newTrackInfoDiv = document.createElement('div');
+    newTrackInfoDiv.className = 'my-3 px-1 shadow-sm';
+    newTrackInfoDiv.id = repackedJSON.trackingNumber;
+
+    let carrierField = repackedJSON.carrier;
+    let etaField = repackedJSON.trackingETA;
+    let statusField = repackedJSON.currentStatus;
+    let trackingNumField = repackedJSON.trackingNumber;
+
+    let shippedYet = repackedJSON.numEvents > 1 ? true : false;
+    let outforDelivery = statusField.toLowerCase().includes("out") ? true : false;
+    let deliveredYet = statusField.toLowerCase().includes("delivered") ? true : false;
+
+    let progressPercent = 0;
+
+    newTrackInfoDiv.innerHTML = `
+        <span id="trackDisplay" class="trackDisplay">Tracking Info For:</span> <span id="trackingNumber" class="fst-italic">${trackingNumField}</span>
+        <div class="progress border" id="trackingInfo"> 
+            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <div class="container px-0 my-1">
+         Carrier: ${carrierField}<br>
+         Current Status: ${statusField}<br>
+         ETA: ${etaField}<br>
+        </div>
+        `;
+
+
+    document.getElementById('trackingContainer').appendChild(newTrackInfoDiv);
+
+
 
 ;}
 
