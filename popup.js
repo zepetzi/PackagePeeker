@@ -139,13 +139,13 @@ async function checkInfoFound(responseBody) {
         if (responseBody?.finalTrackData?.output?.completeTrackResults?.[0]?.trackResults?.[0]?.error !== undefined) {
             statusMessage = responseBody?.finalTrackData?.output?.completeTrackResults?.[0]?.trackResults?.[0]?.error?.message;
             updateMessage(statusMessage, "error");
-            throw new Error(`{statusMessage}`)
+            throw new Error(`${statusMessage}`);
         }
     } else if (responseBody["carrier"] == "UPS") {
         if (responseBody?.finalTrackData?.trackResponse?.shipment?.[0]?.warnings !== undefined) {
             statusMessage = responseBody?.finalTrackData?.trackResponse?.shipment?.[0]?.warnings?.[0]?.message;
             updateMessage(statusMessage, "error");
-            throw new Error(`{statusMessage}`)
+            throw new Error(`${statusMessage}`);
         }
     }
 
