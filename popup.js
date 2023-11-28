@@ -168,8 +168,8 @@ async function saveToChromeStorage(responseBody){
     try {
         await trackingInfoExtract(responseBody);
         await chrome.storage.local.set({[trackString]: responseBody});
-        console.log("tracking info added to local storage");
-        statusMessage = "Tracking info added to local storage";
+        console.log("tracking info added to local storage!");
+        statusMessage = "Tracking info added!";
         updateMessage(statusMessage, "success");
         
 
@@ -248,20 +248,38 @@ async function renderHTML(repackedJSON) {
     newTrackInfoDiv.id = repackedJSON.trackingNumber;
 
     let carrierField = repackedJSON.carrier;
-    let etaField = repackedJSON.trackingETA;
+    let etaField = await formatDate(repackedJSON.trackingETA.replace(/-/g, '').substring(0,8));
+
     let statusField = repackedJSON.currentStatus;
     let trackingNumField = repackedJSON.trackingNumber;
 
     let shippedYet = repackedJSON.numEvents > 1 ? true : false;
-    let outforDelivery = statusField.toLowerCase().includes("out") ? true : false;
+    let outforDelivery = statusField.toLowerCase().includes("out") || statusField.toLowerCase().includes("delivery")
     let deliveredYet = statusField.toLowerCase().includes("delivered") ? true : false;
 
-    let progressPercent = 0;
+    let greenProgress = '';
+
+    // let progressPercent = shippedYet ? outforDelivery ? 75 : deliveredYet ? 100 : 40 : 0;
+    let progressPercent = 40;
+    let progressStriped = '-striped';
+    let progressAnimated = '-animated';
+    
+    if (!shippedYet) {
+        progressPercent = 0;
+    } else if (outforDelivery) {
+        progressPercent = 75;
+    } else if (deliveredYet) {
+        progressPercent = 100;
+        greenProgress = 'bg-success'
+        progressStriped = '';
+        progressAnimated = '';
+
+    };
 
     newTrackInfoDiv.innerHTML = `
         <span id="trackDisplay" class="trackDisplay">Tracking Info For:</span> <span id="trackingNumber" class="fst-italic">${trackingNumField}</span>
         <div class="progress border" id="trackingInfo"> 
-            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+            <div class="progress-bar progress-bar${progressStriped} progress-bar${progressAnimated} ${greenProgress}" role="progressbar" style="width: ${progressPercent}%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
         <div class="container px-0 my-1">
          Carrier: ${carrierField}<br>
@@ -270,14 +288,23 @@ async function renderHTML(repackedJSON) {
         </div>
         `;
 
-
     document.getElementById('trackingContainer').appendChild(newTrackInfoDiv);
-
-
 
 ;}
 
+    async function formatDate(dateString) {
+        
+        let year = dateString.substring(0,4);
+        let month = dateString.substring(4,6);
+        let day = dateString.substring(6,8);
 
+        let newDateStr = new Date(year, month-1, day);
+
+        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+
+        return newDateStr.toLocaleDateString('en-US', options);
+
+    };
 
 
                     //so create variable that can be used to either display a message or information at the end?
