@@ -21,15 +21,9 @@ h1 {
   color: #9a9a9a;
 }
 
-.trackDisplay {
+.trackDisplay, .carrierDisplay, .etaDisplay, .statusDisplay {
   font-family: 'Poppins-SemiBold', sans-serif !important;
 }
-
-.carrierDisplay {
-  font-family: 'Poppins-SemiBold', sans-serif !important;
-  text-align: right;
-}
-
 
 .message-success {
   color: rgb(65, 255, 65);

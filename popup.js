@@ -277,14 +277,31 @@ async function renderHTML(repackedJSON) {
     };
 
     newTrackInfoDiv.innerHTML = `
-        <span id="trackDisplay" class="trackDisplay">Tracking Info For:</span> <span id="trackingNumber" class="fst-italic">${trackingNumField}</span>
+        <div class="row">
+            <div class="col md-8 text-end">
+                <span id="trackDisplay" class="trackDisplay">Tracking Info For: </span> <span id="trackingNumber" class="fst-italic">${trackingNumField}</span>
+            </div>
+
+            <div class="col-4 text-start">
+              <span id="carrierDisplay" class="carrierDisplay">Carrier: </span> <span id="carrier" class="fst-italic">${carrierField}</span>
+            </div>
+
+        </div>
+
         <div class="progress border" id="trackingInfo"> 
             <div class="progress-bar progress-bar${progressStriped} progress-bar${progressAnimated} ${greenProgress}" role="progressbar" style="width: ${progressPercent}%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
         <div class="container px-0 my-1">
-         Carrier: ${carrierField}<br>
-         Current Status: ${statusField}<br>
-         ETA: ${etaField}<br>
+
+        <div class="row">
+            <div class="col md-8 text-end">
+            ${statusField}<br>
+            </div>
+
+            <div class="col-4 text-start">
+            <span id="etaDisplay" class="etaDisplay">ETA: </span>${etaField}
+            </div>
+
         </div>
         `;
 
