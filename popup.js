@@ -4,6 +4,7 @@ let statusMessage;
 
 document.addEventListener('DOMContentLoaded', (event) => {
     setupTrackButtonListener();
+    renderCurrentTracking();
 });
 
 async function setupTrackButtonListener() {
@@ -278,11 +279,11 @@ async function renderHTML(repackedJSON) {
 
     newTrackInfoDiv.innerHTML = `
         <div class="row">
-            <div class="col md-8 text-end">
+            <div class="col-9 text-end">
                 <span id="trackDisplay" class="trackDisplay">Tracking Info For: </span> <span id="trackingNumber" class="fst-italic">${trackingNumField}</span>
             </div>
 
-            <div class="col-4 text-start">
+            <div class="col-3 text-start">
               <span id="carrierDisplay" class="carrierDisplay">Carrier: </span> <span id="carrier" class="fst-italic">${carrierField}</span>
             </div>
 
@@ -294,7 +295,7 @@ async function renderHTML(repackedJSON) {
         <div class="container px-0 my-1">
 
         <div class="row">
-            <div class="col md-8 text-end">
+            <div class="col-8 text-end">
             ${statusField}<br>
             </div>
 
@@ -307,21 +308,43 @@ async function renderHTML(repackedJSON) {
 
     document.getElementById('trackingContainer').appendChild(newTrackInfoDiv);
 
-;}
+};
 
-    async function formatDate(dateString) {
+async function formatDate(dateString) {
         
-        let year = dateString.substring(0,4);
-        let month = dateString.substring(4,6);
-        let day = dateString.substring(6,8);
+    let year = dateString.substring(0,4);
+    let month = dateString.substring(4,6);
+    let day = dateString.substring(6,8);
 
-        let newDateStr = new Date(year, month-1, day);
+    let newDateStr = new Date(year, month-1, day);
 
-        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
 
-        return newDateStr.toLocaleDateString('en-US', options);
+    return newDateStr.toLocaleDateString('en-US', options);
 
-    };
+};
+
+async function renderCurrentTracking() {
+
+    chrome.storage.local.get(null, function(items) {
+
+        let allRBody = Object.values(items);
+
+        if (allRBody.length === 0) {
+
+            return;
+
+        } else {
+
+            for (let i = 0; i < allRBody.length; i++) {
+
+                trackingInfoExtract(allRBody[i]);
+
+            }
+        }
+    });
+
+};
 
 
                     //so create variable that can be used to either display a message or information at the end?

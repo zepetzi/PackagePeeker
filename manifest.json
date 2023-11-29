@@ -12,7 +12,7 @@
 	},
 
 	"icons" : {
-
+		"128": "icons/icon2ns.png"
 	},
 	
 	"content_scripts": [
