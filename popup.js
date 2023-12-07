@@ -1,4 +1,4 @@
-import { apiEndpointURL } from './apivar.js';
+// import { apiEndpointURL } from './apivar.js';
 
 let statusMessage;
 
@@ -278,7 +278,7 @@ async function renderHTML(repackedJSON) {
     };
 
     newTrackInfoDiv.innerHTML = `
-        <div class="row">
+        <div class="row gx-0">
             <div class="col-9 text-end">
                 <span id="trackDisplay" class="trackDisplay">Tracking Info For: </span> <span id="trackingNumber" class="fst-italic">${trackingNumField}</span>
             </div>
