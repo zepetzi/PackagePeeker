@@ -245,7 +245,7 @@ async function renderHTML(repackedJSON) {
     //render the tracking info row to the popup.html
 
     let newTrackInfoDiv = document.createElement('div');
-    newTrackInfoDiv.className = 'my-3 px-1 shadow-sm';
+    newTrackInfoDiv.className = 'my-3 px-1 shadow-sm custom-margin-right';
     newTrackInfoDiv.id = repackedJSON.trackingNumber;
 
     let carrierField = repackedJSON.carrier;
@@ -279,11 +279,16 @@ async function renderHTML(repackedJSON) {
 
     newTrackInfoDiv.innerHTML = `
         <div class="row gx-0">
-            <div class="col-9 text-end">
+
+            <div class="position-relative">
+            <button type="button" class="btn btn-close btn-sm translate-start mt-0 ms-1 p-1 position-absolute top-100 start-100"></button>
+            </div>
+
+            <div class="col-9 text-start">
                 <span id="trackDisplay" class="trackDisplay">Tracking Info For: </span> <span id="trackingNumber" class="fst-italic">${trackingNumField}</span>
             </div>
 
-            <div class="col-3 text-start">
+            <div class="col-3 text-end">
               <span id="carrierDisplay" class="carrierDisplay">Carrier: </span> <span id="carrier" class="fst-italic">${carrierField}</span>
             </div>
 
@@ -295,11 +300,11 @@ async function renderHTML(repackedJSON) {
         <div class="container px-0 my-1">
 
         <div class="row">
-            <div class="col-8 text-end">
+            <div class="col-8 text-start">
             ${statusField}<br>
             </div>
 
-            <div class="col-4 text-start">
+            <div class="col-4 text-end">
             <span id="etaDisplay" class="etaDisplay">ETA: </span>${etaField}
             </div>
 
