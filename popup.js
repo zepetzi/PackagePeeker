@@ -1,9 +1,10 @@
-// import { apiEndpointURL } from './apivar.js';
+import { apiEndpointURL } from './apivar.js';
 
 let statusMessage;
 
 document.addEventListener('DOMContentLoaded', (event) => {
     setupTrackButtonListener();
+    setupRefreshButtonListener();
     renderCurrentTracking();
 });
 
@@ -13,6 +14,15 @@ async function setupTrackButtonListener() {
     const trackButton = document.getElementById('trackButton');
     //upon click, start tracking handler func
     trackButton.addEventListener('click', trackingHandler);
+
+}
+
+async function setupRefreshButtonListener() {
+
+    //assign button element and add click listener for refresh button
+    const trackButton = document.getElementById('refreshButton');
+    //upon click, start refresh func
+    trackButton.addEventListener('click', refreshTracking);
 
 }
 
@@ -35,7 +45,15 @@ async function trackingInputValidation(trackingInput) {
             return 'FedEx';
         } else if (usps1.test(trackingInput) || usps2.test(trackingInput) || usps3.test(trackingInput) || usps4.test(trackingInput)) {
             return 'USPS';
+        } else if (trackingInput == '') {
+
+            console.error("No tracking number entered!");
+            // statusMessage = "Unrecognized Carrier Format";
+            // updateMessage(statusMessage);
+            throw new Error("No tracking number entered!");
+
         } else {
+
             console.error("Unrecognized Carrier Format");
             // statusMessage = "Unrecognized Carrier Format";
             // updateMessage(statusMessage);
@@ -51,7 +69,10 @@ async function checkDupe(trackingInput) {
         console.log("Tracking number already exists!");
         updateMessage(statusMessage, "warning");
         throw new Error("Tracking number already exists!");
+
     }
+
+    
 };
 
 async function trackingHandler() {
@@ -82,7 +103,9 @@ async function trackingHandler() {
             updateMessage(statusMessage, "success");
             console.log("resp body exists");
             await checkInfoFound(responseBody);
-            saveToChromeStorage(responseBody);
+            await saveToChromeStorage(responseBody);
+            await trackingInfoExtract(responseBody);
+
 
         } else {
             //otherwise error out
@@ -98,6 +121,7 @@ async function trackingHandler() {
         statusMessage = error.message;
         updateMessage(statusMessage, "error");
     }
+
 };
 
 //from trackingHandler:
@@ -167,10 +191,10 @@ async function saveToChromeStorage(responseBody){
     //check if the tracking info was found at all
     //if so, add to chrome storage
     try {
-        await trackingInfoExtract(responseBody);
+        // await trackingInfoExtract(responseBody);
         await chrome.storage.local.set({[trackString]: responseBody});
         console.log("tracking info added to local storage!");
-        statusMessage = "Tracking info added!";
+        statusMessage = "Tracking list updated!";
         updateMessage(statusMessage, "success");
         
 
@@ -238,6 +262,7 @@ async function trackingInfoExtract(responseBody) {
   };
   
   await renderHTML(repackedJSON);
+
 };
 
 
@@ -311,6 +336,13 @@ async function renderHTML(repackedJSON) {
         </div>
         `;
 
+    let rowCloseButton = newTrackInfoDiv.querySelector('.btn-close')
+        rowCloseButton.addEventListener('click', function() {
+        
+        newTrackInfoDiv.remove();
+        chrome.storage.local.remove(trackingNumField);
+    });
+    
     document.getElementById('trackingContainer').appendChild(newTrackInfoDiv);
 
 };
@@ -328,6 +360,68 @@ async function formatDate(dateString) {
     return newDateStr.toLocaleDateString('en-US', options);
 
 };
+
+async function refreshTracking() {
+
+    chrome.storage.local.get(null, async function(items) {
+
+        let allRBody = Object.values(items);
+
+        if (allRBody.length === 0) {
+
+            return;
+
+        } else {
+
+            for (let i = 0; i < allRBody.length; i++){
+    
+                let trackingInput = allRBody[i]["trackingNumber"];
+                let carrierID = allRBody[i]["carrier"];
+
+                try {
+                    const responseBody = await sendToLambda(trackingInput, carrierID);
+                
+                    if (responseBody){
+
+                        //if response body exists, attempt to save to chrome storage
+                        await checkInfoFound(responseBody);
+                        await saveToChromeStorage(responseBody);
+
+                    } else {
+                        //otherwise error out
+                        statusMessage = `No response body received for ${trackingInput}`;
+                        updateMessage(statusMessage, "error");
+                        console.error("No response body received");
+
+                    }
+                
+                } catch (error) {
+                
+                    console.error("Error", error.message);
+                    statusMessage = error.message;
+                    updateMessage(statusMessage, "error");
+                }
+
+            }
+
+            await deRenderAllTracking()
+            await renderCurrentTracking();
+            statusMessage = "Tracking numbers refreshed!";
+            updateMessage(statusMessage, "success");
+            console.log("tracking numbers refreshed");
+
+        }
+    });
+
+}
+
+async function deRenderAllTracking() {
+    let trackingContainer = document.getElementById('trackingContainer');
+    while (trackingContainer.firstChild){
+        trackingContainer.removeChild(trackingContainer.firstChild);
+    }
+}
+
 
 async function renderCurrentTracking() {
 
@@ -350,36 +444,3 @@ async function renderCurrentTracking() {
     });
 
 };
-
-
-                    //so create variable that can be used to either display a message or information at the end?
-                    //create text line mentioning error
-
-
-                    // }
-
-
-            //try statementss
-
-    // now (re)render visual elements?
-    // if carrier, send to local storage 
-
-    // then for every item in local storage
-
-    // depending on carrier, use the correct render function parse and sort tracking elements and populate progress bar
-
-
- 
-
-
-
-/*
-------- storage testing -------
-let rando = Math.random();
-let randString = rando.toString();
-
-localStorage.setItem([randString], 'value1');
-console.log("added to storage")
-});
--------------------------------
-*/
