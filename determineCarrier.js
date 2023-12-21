@@ -22,5 +22,5 @@ function determineCarrier(trackingNumber) {
 }
 
 // Usage:
-var carrier = determineCarrier('');
-console.log(carrier);  // Outputs: UPS
+// var carrier = determineCarrier('');
+// console.log(carrier);  // Outputs: UPS

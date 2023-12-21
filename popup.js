@@ -278,6 +278,13 @@ async function renderHTML(repackedJSON) {
 
     let statusField = repackedJSON.currentStatus;
     let trackingNumField = repackedJSON.trackingNumber;
+    
+    let carrierTrackingURL;
+    if (carrierField == "UPS") {
+        carrierTrackingURL = `<a target="_blank" href="https://www.ups.com/track?track=yes&trackNums=${trackingNumField}"`;
+    } if (carrierField == "FedEx") { 
+        carrierTrackingURL = `<a target="_blank" href="https://www.fedex.com/fedextrack/?trknbr=${trackingNumField}"`;
+    }
 
     let shippedYet = repackedJSON.numEvents > 1 ? true : false;
     let outforDelivery = statusField.toLowerCase().includes("out") || statusField.toLowerCase().includes("delivery")
@@ -296,7 +303,7 @@ async function renderHTML(repackedJSON) {
         progressPercent = 75;
     } else if (deliveredYet) {
         progressPercent = 100;
-        greenProgress = 'bg-success'
+        greenProgress = 'bg-success';
         progressStriped = '';
         progressAnimated = '';
 
@@ -310,7 +317,7 @@ async function renderHTML(repackedJSON) {
             </div>
 
             <div class="col-9 text-start">
-                <span id="trackDisplay" class="trackDisplay">Tracking Info For: </span> <span id="trackingNumber" class="fst-italic">${trackingNumField}</span>
+                <span id="trackDisplay" class="trackDisplay">Tracking Info For: </span>${carrierTrackingURL}<span id="trackingNumber" class="fst-italic">${trackingNumField}</span></a>
             </div>
 
             <div class="col-3 text-end">
