@@ -1,5 +1,9 @@
-// import fetch from 'node-fetch';
 /*global fetch*/
+
+let fedexID = process.env.fedexID;
+let fedexSecret = process.env.fedexSecret;
+let upsID = process.env.upsID;
+let upsSecret = process.env.upsSecret;
 
 //Upload test
 
@@ -49,7 +53,7 @@ export const handler = async (event) => {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'x-merchant-id': 'string',
-                    Authorization: 'Basic ' + Buffer.from('<client_id here>:<client_secret here>').toString('base64')
+                    Authorization: 'Basic ' + Buffer.from(`${upsID}:${upsSecret}`).toString('base64')
                 },
                 body: new URLSearchParams(formData).toString()
             }
@@ -94,8 +98,8 @@ export const handler = async (event) => {
     
       const fedexOAparams = new URLSearchParams();
       fedexOAparams.append('grant_type', 'client_credentials');
-      fedexOAparams.append('client_id', "<enter client_id here>");
-      fedexOAparams.append('client_secret', "<enter client_secret here>");
+      fedexOAparams.append('client_id', `${fedexID}`);
+      fedexOAparams.append('client_secret', `${fedexSecret}`);
     
       try {
         // Make the POST request
@@ -151,9 +155,6 @@ export const handler = async (event) => {
           }
     
           const fedexTrackData = await fedexTrackResponse.json();
-        //   const strgfyJSON = JSON.stringify(fedexTrackData, null, 2)
-        //   console.log(strgfyJSON);
-          // console.log(fedexTrackData);
           return fedexTrackData;
         
       } catch (error) {
@@ -162,6 +163,7 @@ export const handler = async (event) => {
       
 
     }
+    
     
     // conditional logic for carriers
     
@@ -182,40 +184,13 @@ export const handler = async (event) => {
 
         var finalTrackData = JSON.stringify({"error-message":"Unknown or Unsupported Carrier"});
 
-    }  
+    }    
 
     //return JSON or text to calling function
-    return {carrier, "trackingNumber": event['inquiryNumber'], finalTrackData}; 
+    return {carrier, "trackingNumber":event['inquiryNumber'], finalTrackData}; 
     
-    // ----------- testing output -----------
-
-
-    //---highlight everything between here and:
-    //[][][][][][][][][][][][][][][][][][][][][][][]
-
-    // //text display
-    // //const trackData = await trackingResp.text();
-    // //console.log(trackData)
-    // //or
-
-    // //OR (json display)
     
-    // const trackData = await trackingResp.json();
-    
-    // const strgfyJSON = JSON.stringify(trackData, null, 2)
-    // console.log(strgfyJSON);
-    // //or
-    // //console.log(trackData["trackResponse"]["shipment"][0]["package"][0]["packageAddress"]);
-    
-    //[][][][][][][][][][][][][][][][][][][][][][][]
-    //--------...here and uncomment for testing
-    
-} //lambda handler func closing bracket --------
+} 
     
 
-    // const response = {
-    //     statusCode: 200,
-    //     body: JSON.stringify('Hello from Lambda!'),
-    // };
-    // return response;
 
