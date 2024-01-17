@@ -7,7 +7,6 @@ package_lambda:
   stage: package
   before_script:
     - apt-get update && apt-get install -y zip 
-    - apt-get update && apt-get install -y awscli
   script:
     - cd LambdaFuncs
     - zip ../lambda_function.zip lambda.mjs  # Correct the zip command
@@ -16,7 +15,10 @@ package_lambda:
       - lambda_function.zip  # Save the zip as an artifact for other jobs
 
 deploy_lambda:
+  image: node:latest
   stage: deploy
+  before_script:
+    - apt-get update && apt-get install -y awscli
   script:
     - aws lambda update-function-code --function-name lambda --zip-file fileb://lambda_function.zip
   dependencies:
