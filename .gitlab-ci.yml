@@ -1,0 +1,22 @@
+stages:
+  - package
+  - deploy
+
+package_lambda:
+  image: node:latest
+  stage: package
+  before_script:
+    - apt-get update && apt-get install -y zip 
+  script:
+    - cd LambdaFuncs
+    - zip ../lambda_function.zip lambda.mjs  # Correct the zip command
+  artifacts:
+    paths:
+      - lambda_function.zip  # Save the zip as an artifact for other jobs
+
+deploy_lambda:
+  stage: deploy
+  script:
+    - aws lambda update-function-code --function-name lambda --zip-file fileb://lambda_function.zip
+  dependencies:
+    - package_lambda  # Ensures this job uses the zip created in the package_lambda job
