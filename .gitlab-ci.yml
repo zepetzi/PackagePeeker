@@ -13,6 +13,9 @@ package_lambda:
   artifacts:
     paths:
       - lambda_function.zip  # Save the zip as an artifact for other jobs
+  only:
+    changes:
+      - LambdaFuncs/lambda.mjs
 
 deploy_lambda:
   image: node:latest
@@ -23,3 +26,6 @@ deploy_lambda:
     - aws lambda update-function-code --function-name PackagePeekerLambda --zip-file fileb://lambda_function.zip --region us-east-1
   dependencies:
     - package_lambda  # Ensures this job uses the zip created in the package_lambda job
+  only:
+    changes:
+      - LambdaFuncs/lambda.mjs
