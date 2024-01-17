@@ -20,6 +20,6 @@ deploy_lambda:
   before_script:
     - apt-get update && apt-get install -y awscli
   script:
-    - aws lambda update-function-code --function-name lambda --zip-file fileb://lambda_function.zip --region us-east-1
+    - aws lambda update-function-code --function-name PackagePeekerLambda --zip-file fileb://lambda_function.zip --region us-east-1
   dependencies:
     - package_lambda  # Ensures this job uses the zip created in the package_lambda job
