@@ -7,6 +7,7 @@ package_lambda:
   stage: package
   before_script:
     - apt-get update && apt-get install -y zip 
+    - apt-get update && apt-get install -y awscli
   script:
     - cd LambdaFuncs
     - zip ../lambda_function.zip lambda.mjs  # Correct the zip command
