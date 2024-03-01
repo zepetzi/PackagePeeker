@@ -1,6 +1,6 @@
 @font-face {
     font-family: 'Poppins-Black';
-    src: url('fonts\Poppins-Black.ttf') format('truetype');
+    src: url('..\fonts\Poppins-Black.ttf') format('truetype');
 }
 
 :root {

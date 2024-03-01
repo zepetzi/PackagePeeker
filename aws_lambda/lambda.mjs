@@ -60,11 +60,6 @@ export const handler = async (event) => {
         const oAuthJSON = await oAuthRespUPS.json();
     
         const oAuthTok = oAuthJSON["access_token"];
-    
-        
-        // testing output for oAuth token
-    
-        // console.log("This is the oAuth Token: " + oAuthTok);
         
         // ----------- start of UPS API tracking request -----------
     
@@ -122,7 +117,7 @@ export const handler = async (event) => {
       }
     
     
-    //--------- [][][][][] Fedex Tracking Number Functionality [][][][][] --------- 
+    //--------- Fedex Tracking Number Functionality --------- 
     
      
       const fedextrackPayload = {
@@ -143,7 +138,7 @@ export const handler = async (event) => {
               headers: {
                   'Content-Type': 'application/json',
                   'X-locale': 'en_US',
-                  'Authorization': 'Bearer '+ fedexToken // Add your token here
+                  'Authorization': 'Bearer '+ fedexToken 
               },
               body: JSON.stringify(fedextrackPayload)
           });

@@ -1,4 +1,4 @@
-import { apiEndpointURL } from './apivar.js';
+import { apiEndpointURL } from '../js/apivar.js';
 
 let statusMessage;
 
@@ -44,7 +44,10 @@ async function trackingInputValidation(trackingInput) {
         } else if (fedex1.test(trackingInput) || fedex2.test(trackingInput)) {
             return 'FedEx';
         } else if (usps1.test(trackingInput) || usps2.test(trackingInput) || usps3.test(trackingInput) || usps4.test(trackingInput)) {
-            return 'USPS';
+            console.error("USPS not implemented yet!");
+            throw new Error("USPS not implemented yet!");
+            // return 'USPS';
+
         } else if (trackingInput == '') {
 
             console.error("No tracking number entered!");
@@ -274,7 +277,13 @@ async function renderHTML(repackedJSON) {
     newTrackInfoDiv.id = repackedJSON.trackingNumber;
 
     let carrierField = repackedJSON.carrier;
-    let etaField = await formatDate(repackedJSON.trackingETA.replace(/-/g, '').substring(0,8));
+
+    let etaField = 'None';
+    if (repackedJSON.trackingETA != undefined){
+        etaField = await formatDate(repackedJSON.trackingETA.replace(/-/g, '').substring(0,8));
+    }
+
+    
 
     let statusField = repackedJSON.currentStatus;
     let trackingNumField = repackedJSON.trackingNumber;
@@ -306,6 +315,7 @@ async function renderHTML(repackedJSON) {
         greenProgress = 'bg-success';
         progressStriped = '';
         progressAnimated = '';
+        statusField = statusField.toUpperCase()
 
     };
 
@@ -321,7 +331,7 @@ async function renderHTML(repackedJSON) {
             </div>
 
             <div class="col-3 text-end">
-              <span id="carrierDisplay" class="carrierDisplay">Carrier: </span> <span id="carrier" class="fst-italic">${carrierField}</span>
+              <span id="carrierDisplay" class="carrierDisplay">Carrier: </span> <span id="carrier">${carrierField}</span>
             </div>
 
         </div>
