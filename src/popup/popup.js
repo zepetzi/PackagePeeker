@@ -48,7 +48,7 @@ async function trackingInputValidation(trackingInput) {
             throw new Error("USPS not implemented yet!");
             // return 'USPS';
 
-        } else if (trackingInput == '') {
+        } else if (trackingInput === '') {
 
             console.error("No tracking number entered!");
             // statusMessage = "Unrecognized Carrier Format";
@@ -163,13 +163,13 @@ async function sendToLambda(trackingInput, carrierID) {
 
 async function checkInfoFound(responseBody) {
 
-    if (responseBody["carrier"] == "FedEx"){
+    if (responseBody["carrier"] === "FedEx"){
         if (responseBody?.finalTrackData?.output?.completeTrackResults?.[0]?.trackResults?.[0]?.error !== undefined) {
             statusMessage = responseBody?.finalTrackData?.output?.completeTrackResults?.[0]?.trackResults?.[0]?.error?.message;
             updateMessage(statusMessage, "error");
             throw new Error(`${statusMessage}`);
         }
-    } else if (responseBody["carrier"] == "UPS") {
+    } else if (responseBody["carrier"] === "UPS") {
         if (responseBody?.finalTrackData?.trackResponse?.shipment?.[0]?.warnings !== undefined) {
             statusMessage = responseBody?.finalTrackData?.trackResponse?.shipment?.[0]?.warnings?.[0]?.message;
             updateMessage(statusMessage, "error");
@@ -244,14 +244,14 @@ async function trackingInfoExtract(responseBody) {
 
   let repackedJSON = {};  
 
-  if (responseBody["carrier"] == "FedEx") {
+  if (responseBody["carrier"] === "FedEx") {
     repackedJSON.carrier = "FedEx";
     repackedJSON.trackingNumber = responseBody["trackingNumber"],
     repackedJSON.trackingETA = responseBody?.finalTrackData?.output?.completeTrackResults?.[0]?.trackResults?.[0]?.standardTransitTimeWindow?.window?.ends,
     repackedJSON.currentStatus = responseBody?.finalTrackData?.output?.completeTrackResults?.[0]?.trackResults?.[0]?.scanEvents?.[0]?.eventDescription
     repackedJSON.numEvents = responseBody?.finalTrackData?.output?.completeTrackResults?.[0]?.trackResults?.[0]?.scanEvents?.length
   
-  } else if (responseBody["carrier"] == "UPS") {
+  } else if (responseBody["carrier"] === "UPS") {
 
     repackedJSON.carrier = "UPS";
     repackedJSON.trackingNumber = responseBody["trackingNumber"],
@@ -259,7 +259,7 @@ async function trackingInfoExtract(responseBody) {
     repackedJSON.currentStatus = responseBody?.finalTrackData?.trackResponse?.shipment?.[0]?.package?.[0]?.activity?.[0]?.status?.description
     repackedJSON.numEvents = responseBody?.finalTrackData?.trackResponse?.shipment?.[0]?.package?.[0]?.activity?.length
 
-//   } else if (trackingJSON["carrier"] == "USPS") {
+//   } else if (trackingJSON["carrier"] === "USPS") {
   
 
   };
@@ -289,9 +289,9 @@ async function renderHTML(repackedJSON) {
     let trackingNumField = repackedJSON.trackingNumber;
     
     let carrierTrackingURL;
-    if (carrierField == "UPS") {
+    if (carrierField === "UPS") {
         carrierTrackingURL = `<a target="_blank" href="https://www.ups.com/track?track=yes&trackNums=${trackingNumField}"`;
-    } if (carrierField == "FedEx") { 
+    } if (carrierField === "FedEx") { 
         carrierTrackingURL = `<a target="_blank" href="https://www.fedex.com/fedextrack/?trknbr=${trackingNumField}"`;
     }
 

@@ -160,20 +160,20 @@ export const handler = async (event) => {
     
     // conditional logic for carriers
     
-    if (carrier == 'UPS') {
+    if (carrier === 'UPS') {
         var finalTrackData = await getUPSTrackingInfo(event);    
     } 
     
-    else if (carrier == 'FedEx') {
+    else if (carrier === 'FedEx') {
         var finalTrackData = await getFedExTrackingInfo(event);
     }
     
-    else if (carrier == 'USPS') {
+    else if (carrier === 'USPS') {
         // var finalTrackData = await getUSPSTrackingInfo(event);
         var finalTrackData = {"Details": "Not Implemented"}
     }
     
-    else if (carrier == 'Unknown') {
+    else if (carrier === 'Unknown') {
 
         var finalTrackData = JSON.stringify({"error-message":"Unknown or Unsupported Carrier"});
 
