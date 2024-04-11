@@ -37,16 +37,17 @@ async function trackingInputValidation(trackingInput) {
         var usps2 = /^92\d{20}$/;
         var usps3 = /^\d{30}$/;
         var usps4 = /^\d{26}$/;
+        var usps5 = /^420\d{31}$/;
     
         // conditional logic using the test() method
         if (ups.test(trackingInput)) {
             return 'UPS';
         } else if (fedex1.test(trackingInput) || fedex2.test(trackingInput)) {
             return 'FedEx';
-        } else if (usps1.test(trackingInput) || usps2.test(trackingInput) || usps3.test(trackingInput) || usps4.test(trackingInput)) {
-            console.error("USPS not implemented yet!");
-            throw new Error("USPS not implemented yet!");
-            // return 'USPS';
+        } else if (usps1.test(trackingInput) || usps2.test(trackingInput) || usps3.test(trackingInput) || usps4.test(trackingInput) || usps5.test(trackingInput)) {
+            // console.error("USPS not implemented yet!");
+            // throw new Error("USPS not implemented yet!");
+            return 'USPS';
 
         } else if (trackingInput === '') {
 
@@ -96,9 +97,17 @@ async function trackingHandler() {
         await checkDupe(trackingInput);
         //validate input 
         const carrierID = await trackingInputValidation(trackingInput);
-        // responseBody is a json by now
-        const responseBody = await sendToLambda(trackingInput, carrierID);
         
+        // responseBody is a json by now
+        let responseBody;
+
+        //delete conditional when USPS implemented!!!
+        if (carrierID !== "USPS"){
+            responseBody = await sendToLambda(trackingInput, carrierID);
+        } else {
+            responseBody = {"carrier": carrierID, "trackingNumber":trackingInput, "Details": "Not Implemented"};
+
+        }
         if (responseBody){
 
             //if response body exists, attempt to save to chrome storage
@@ -259,8 +268,13 @@ async function trackingInfoExtract(responseBody) {
     repackedJSON.currentStatus = responseBody?.finalTrackData?.trackResponse?.shipment?.[0]?.package?.[0]?.activity?.[0]?.status?.description
     repackedJSON.numEvents = responseBody?.finalTrackData?.trackResponse?.shipment?.[0]?.package?.[0]?.activity?.length
 
-//   } else if (trackingJSON["carrier"] === "USPS") {
+  } else if (responseBody["carrier"] === "USPS") {
   
+    repackedJSON.carrier = "USPS";
+    repackedJSON.trackingNumber = responseBody["trackingNumber"],
+    repackedJSON.trackingETA = "N/A"
+    repackedJSON.currentStatus = "USPS Not Implemented"
+    repackedJSON.numEvents = 0
 
   };
   
@@ -291,8 +305,10 @@ async function renderHTML(repackedJSON) {
     let carrierTrackingURL;
     if (carrierField === "UPS") {
         carrierTrackingURL = `<a target="_blank" href="https://www.ups.com/track?track=yes&trackNums=${trackingNumField}"`;
-    } if (carrierField === "FedEx") { 
+    } else if (carrierField === "FedEx") { 
         carrierTrackingURL = `<a target="_blank" href="https://www.fedex.com/fedextrack/?trknbr=${trackingNumField}"`;
+    } else if (carrierField === "USPS") { 
+        carrierTrackingURL = `<a target="_blank" href="https://tools.usps.com/go/TrackConfirmAction?tLabels=${trackingNumField}"`;
     }
 
     let shippedYet = repackedJSON.numEvents > 1 ? true : false;
@@ -395,28 +411,33 @@ async function refreshTracking() {
                 let trackingInput = allRBody[i]["trackingNumber"];
                 let carrierID = allRBody[i]["carrier"];
 
-                try {
-                    const responseBody = await sendToLambda(trackingInput, carrierID);
-                
-                    if (responseBody){
+                //remove when USPS is implemented!!!
+                if (carrierID !== "USPS") {
 
-                        //if response body exists, attempt to save to chrome storage
-                        await checkInfoFound(responseBody);
-                        await saveToChromeStorage(responseBody);
+                    try {
+                        const responseBody = await sendToLambda(trackingInput, carrierID);
+                    
+                        if (responseBody){
 
-                    } else {
-                        //otherwise error out
-                        statusMessage = `No response body received for ${trackingInput}`;
+                            //if response body exists, attempt to save to chrome storage
+                            await checkInfoFound(responseBody);
+                            await saveToChromeStorage(responseBody);
+
+                        } else {
+                            //otherwise error out
+                            statusMessage = `No response body received for ${trackingInput}`;
+                            updateMessage(statusMessage, "error");
+                            console.error("No response body received");
+
+                        }
+                    
+                    } catch (error) {
+                    
+                        console.error("Error", error.message);
+                        statusMessage = error.message;
                         updateMessage(statusMessage, "error");
-                        console.error("No response body received");
-
                     }
-                
-                } catch (error) {
-                
-                    console.error("Error", error.message);
-                    statusMessage = error.message;
-                    updateMessage(statusMessage, "error");
+
                 }
 
             }
