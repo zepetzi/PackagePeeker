@@ -5,7 +5,7 @@ customBS.css.map
 customBS.css
 customBS.scss
 .vscode/
-apivar.js
+# apivar.js
 sampleJSON.json
 testingHTML.html
 background.js
