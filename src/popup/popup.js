@@ -1,5 +1,3 @@
-import { apiEndpointURL } from '../js/apivar.js';
-
 let statusMessage;
 
 document.addEventListener('DOMContentLoaded', (event) => {
@@ -145,7 +143,7 @@ async function sendToLambda(trackingInput, carrierID) {
         "carrier":carrierID
     }
 
-    const gatewayResp = await fetch(apiEndpointURL, {
+    const gatewayResp = await fetch('https://dpknn5hqd4.execute-api.us-east-1.amazonaws.com/dev', {
         method: 'POST',
         body: JSON.stringify(payload),
         headers: {
