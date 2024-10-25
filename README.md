@@ -34,9 +34,4 @@ To install the PackagePeeker extension:
 - Amazon Implementation
 - Tracking number detection and one-click add on web pages
 
-## License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-Project Link: [https://github.com/zepetzi/packagepeeker](https://github.com/zepetzi/packagepeeker)
-
 Don't forget to give the project a star! Thanks again!
